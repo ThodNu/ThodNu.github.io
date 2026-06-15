@@ -1,0 +1,908 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+<title>Project Cost Estimating</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans Thai', sans-serif;
+  background: #eef3ee;
+  color: #2d3436;
+  min-height: 100vh;
+  padding: 0 16px;
+}
+
+.app-container { max-width: 1200px; margin: 0 auto; padding: 20px 0 60px; }
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 40%, #ff6d00 100%);
+  border-radius: 20px;
+  padding: 40px 36px 36px;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 40px rgba(27,94,32,0.25);
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  background: rgba(255,109,0,0.1);
+  border-radius: 50%;
+}
+.header h1 {
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  font-weight: 800;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.header h1 i { font-size: clamp(1.4rem, 3vw, 2rem); color: #ffab40; }
+.header p {
+  color: rgba(255,255,255,0.85);
+  font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+  margin-top: 8px;
+  position: relative;
+  z-index: 1;
+  font-weight: 300;
+}
+
+/* Section Cards */
+.section-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: box-shadow 0.3s;
+}
+.section-card:hover { box-shadow: 0 6px 30px rgba(0,0,0,0.1); }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+.section-header.basic { background: linear-gradient(135deg, #e8f5e9, #f1f8e9); }
+.section-header.activity { background: linear-gradient(135deg, #fff3e0, #fbe9e7); }
+.section-header.equipment { background: linear-gradient(135deg, #e8f5e9, #e0f2f1); }
+
+.icon-wrapper {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.icon-wrapper.green { background: linear-gradient(135deg, #2e7d32, #4caf50); }
+.icon-wrapper.orange { background: linear-gradient(135deg, #e65100, #ff6d00); }
+.icon-wrapper.teal { background: linear-gradient(135deg, #00695c, #26a69a); }
+
+.section-title {
+  flex: 1;
+}
+.section-title h2 {
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 700;
+  color: #1b5e20;
+}
+.section-title.activity h2 { color: #bf360c; }
+.section-title.equipment h2 { color: #004d40; }
+.section-title .sub-label {
+  font-size: 0.78rem;
+  color: #666;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.section-body {
+  padding: 8px 24px 24px;
+}
+
+/* Toggle Button */
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-bottom: 16px;
+}
+.toggle-btn.orange {
+  background: linear-gradient(135deg, #e65100, #ff6d00);
+  color: #fff;
+}
+.toggle-btn.orange:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(230,81,0,0.3); }
+.toggle-btn.green {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32);
+  color: #fff;
+}
+.toggle-btn.green:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(27,94,32,0.3); }
+.toggle-btn i { font-size: 0.85rem; }
+.toggle-btn.active .fa-chevron-down { transform: rotate(180deg); }
+
+.hidden-content { display: none; }
+.hidden-content.show { display: block; animation: fadeSlideIn 0.3s ease; }
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Form Grids */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+.form-group { position: relative; }
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 4px;
+}
+.form-group label .unit {
+  font-weight: 400;
+  color: #888;
+  font-size: 0.75rem;
+}
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3436;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fafafa;
+  outline: none;
+}
+.form-input:focus {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+  background: #fff;
+}
+.form-input.orange-f:focus {
+  border-color: #ff6d00;
+  box-shadow: 0 0 0 3px rgba(255,109,0,0.12);
+}
+.form-input.readonly {
+  background: #f5f7f5;
+  color: #555;
+  cursor: default;
+}
+.form-input.readonly:focus {
+  border-color: #e0e0e0;
+  box-shadow: none;
+  background: #f5f7f5;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed #d0dfd0;
+}
+
+/* Activities & Equipment Lists */
+.item-list { display: flex; flex-direction: column; gap: 8px; }
+.item-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 140px 120px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f8faf8;
+  border: 1px solid #e8ece8;
+  transition: background 0.15s;
+}
+.item-row:hover { background: #f0f6f0; }
+.item-row.checked { background: #e8f5e9; border-color: #a5d6a7; }
+
+.item-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: #2e7d32;
+  cursor: pointer;
+}
+.item-name {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #333;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.item-name:focus {
+  border-color: #b0d0b0;
+  background: #fff;
+  outline: none;
+}
+.item-price {
+  text-align: right;
+  font-weight: 600;
+  color: #2e7d32;
+  font-size: 0.88rem;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.item-price:focus {
+  border-color: #ffcc80;
+  background: #fff;
+  outline: none;
+}
+.item-total {
+  text-align: right;
+  font-weight: 700;
+  color: #e65100;
+  font-size: 0.9rem;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+.item-unit {
+  font-size: 0.7rem;
+  color: #888;
+  font-weight: 400;
+  display: block;
+  margin-top: 1px;
+}
+
+/* Summary Section */
+.summary-card {
+  background: linear-gradient(135deg, #1b5e20, #2e7d32);
+  border-radius: 16px;
+  padding: 28px 32px;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(27,94,32,0.2);
+}
+.summary-card .summary-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,0.9);
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-row .label {
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: rgba(255,255,255,0.8);
+}
+.summary-row .value {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: right;
+}
+.summary-row .value.orange-text { color: #ffab40; }
+
+.summary-row.promo-row { border-bottom: 1px solid rgba(255,255,255,0.1); }
+.promo-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.promo-input {
+  width: 60px;
+  padding: 4px 8px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.promo-input:focus {
+  border-color: #ffab40;
+  background: rgba(255,255,255,0.2);
+}
+.promo-input::placeholder { color: rgba(255,255,255,0.4); }
+
+.vat-row .label small { font-size: 0.72rem; opacity: 0.7; }
+
+.grand-total-row {
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 2px solid rgba(255,255,255,0.25);
+}
+.grand-total-row .label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+}
+.grand-total-row .value {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: #ffab40;
+}
+
+/* Equipment specific */
+.item-row.equip { grid-template-columns: 36px 1fr 120px 100px; }
+.item-row.equip .item-price { color: #00695c; }
+.item-row.equip.checked { background: #e0f2f1; border-color: #80cbc4; }
+.item-row.equip .item-total { color: #00695c; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .item-row { grid-template-columns: 36px 1fr 120px 100px; gap: 8px; }
+  .item-row .item-name { font-size: 0.82rem; }
+  .item-row .item-price { font-size: 0.82rem; width: 100%; }
+  .item-row .item-total { font-size: 0.82rem; }
+  .item-row.equip { grid-template-columns: 36px 1fr 100px 90px; }
+}
+
+@media (max-width: 700px) {
+  body { padding: 0 10px; }
+  .app-container { padding: 12px 0 40px; }
+  .header { padding: 24px 20px 28px; border-radius: 14px; }
+  .section-header { padding: 16px 18px; }
+  .section-body { padding: 6px 18px 18px; }
+  .icon-wrapper { width: 56px; height: 56px; min-width: 56px; font-size: 24px; border-radius: 12px; }
+  .summary-card { padding: 20px 18px; }
+  .form-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .item-row { grid-template-columns: 32px 1fr 100px 80px; gap: 6px; padding: 8px 10px; }
+  .item-row.equip { grid-template-columns: 32px 1fr 90px 75px; }
+  .item-row .item-name { font-size: 0.78rem; padding: 3px 4px; }
+  .item-row .item-price { font-size: 0.78rem; padding: 3px 4px; }
+  .item-row .item-total { font-size: 0.78rem; padding: 3px 4px; }
+  .promo-input { width: 50px; font-size: 0.85rem; }
+  .grand-total-row .value { font-size: clamp(1.3rem, 6vw, 1.8rem); }
+}
+
+@media (max-width: 480px) {
+  .header h1 { flex-wrap: wrap; }
+  .form-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .form-input { padding: 8px 10px; font-size: 0.9rem; }
+  .result-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .item-row { grid-template-columns: 30px 1fr 100px; gap: 4px; }
+  .item-row .item-name { grid-column: 2; }
+  .item-row .item-price { grid-column: 2; text-align: left; }
+  .item-row .item-total { grid-column: 3; text-align: right; grid-row: 2; }
+  .item-row.equip { grid-template-columns: 30px 1fr 90px; }
+  .item-row.equip .item-total { grid-column: 3; }
+  .summary-row { flex-wrap: wrap; gap: 4px; }
+}
+
+/* Utility */
+.text-right { text-align: right; }
+.mt-8 { margin-top: 8px; }
+.mb-8 { margin-bottom: 8px; }
+.flex-center { display: flex; align-items: center; gap: 8px; }
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.badge.green { background: #c8e6c9; color: #1b5e20; }
+.badge.orange { background: #ffe0b2; color: #e65100; }
+.badge.teal { background: #b2dfdb; color: #004d40; }
+</style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <h1><i class="fas fa-calculator"></i> Project Cost Estimating</h1>
+    <p><i class="fas fa-file-invoice"></i> ระบบประมาณการมูลค่าโครงการเบื้องต้น</p>
+  </div>
+
+  <!-- ===== Section 1: ข้อมูลพื้นฐาน ===== -->
+  <div class="section-card">
+    <div class="section-header basic">
+      <div class="icon-wrapper green"><i class="fas fa-clipboard-list"></i></div>
+      <div class="section-title">
+        <h2>ข้อมูลพื้นฐาน</h2>
+        <div class="sub-label">กรอกปริมาณข้อมูลเพื่อใช้ในการคำนวณ</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>ที่ดิน <span class="unit">(แปลง)</span></label>
+          <input type="text" class="form-input" id="landInput" value="10000" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label>สิ่งปลูกสร้าง <span class="unit">(หลัง)</span></label>
+          <input type="text" class="form-input" id="buildingInput" value="5000" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label>ป้าย <span class="unit">(ป้าย)</span></label>
+          <input type="text" class="form-input" id="signInput" value="500" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label>ขนาดพื้นที่ <span class="unit">(ตร.กม.)</span></label>
+          <input type="text" class="form-input" id="areaInput" value="27" inputmode="decimal">
+        </div>
+      </div>
+      <div class="result-grid">
+        <div class="form-group">
+          <label>จำนวน Zone <span class="unit">(แก้ไขได้)</span></label>
+          <input type="text" class="form-input" id="zoneInput" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label>จำนวน Block <span class="unit">(แก้ไขได้)</span></label>
+          <input type="text" class="form-input" id="blockInput" inputmode="numeric">
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:0.72rem;color:#888;">
+        <i class="fas fa-info-circle"></i> Zone = พื้นที่ (ตร.กม.) ÷ 2 (ปัดเศษทิ้ง) &nbsp;|&nbsp; Block = Zone × 15
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Section 2: กิจกรรมที่ดำเนินการ ===== -->
+  <div class="section-card">
+    <div class="section-header activity">
+      <div class="icon-wrapper orange"><i class="fas fa-list-check"></i></div>
+      <div class="section-title activity">
+        <h2>กิจกรรมที่ดำเนินการ</h2>
+        <div class="sub-label">เลือกกิจกรรมและกำหนดราคาต่อหน่วย</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <button class="toggle-btn orange" id="toggleActivities" onclick="toggleSection('activities')">
+        <i class="fas fa-chevron-down"></i> แสดงรายละเอียดกิจกรรม
+      </button>
+      <div class="hidden-content" id="activitiesContent">
+        <div class="item-list" id="activitiesList"></div>
+      </div>
+      <div id="activitiesSummary" style="font-size:0.85rem;color:#666;">
+        <span id="checkedActivitiesCount">0</span> รายการที่เลือก
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Section 3: อุปกรณ์คอมพิวเตอร์ ===== -->
+  <div class="section-card">
+    <div class="section-header equipment">
+      <div class="icon-wrapper teal"><i class="fas fa-server"></i></div>
+      <div class="section-title equipment">
+        <h2>อุปกรณ์คอมพิวเตอร์</h2>
+        <div class="sub-label">เลือกอุปกรณ์และกำหนดราคา</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <button class="toggle-btn green" id="toggleEquipment" onclick="toggleSection('equipment')">
+        <i class="fas fa-chevron-down"></i> แสดงรายละเอียดอุปกรณ์
+      </button>
+      <div class="hidden-content" id="equipmentContent">
+        <div class="item-list" id="equipmentList"></div>
+        <button class="toggle-btn green" style="margin-top:12px;" onclick="addEquipmentItem()">
+          <i class="fas fa-plus"></i> เพิ่มรายการอุปกรณ์
+        </button>
+      </div>
+      <div id="equipmentSummary" style="font-size:0.85rem;color:#666;">
+        <span id="checkedEquipmentCount">0</span> รายการที่เลือก
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Summary ===== -->
+  <div class="summary-card">
+    <div class="summary-title"><i class="fas fa-chart-simple"></i> สรุปมูลค่าโครงการ</div>
+
+    <div class="summary-row">
+      <span class="label">มูลค่าการดำเนินงาน</span>
+      <span class="value" id="activitiesTotalDisplay">0</span>
+    </div>
+    <div class="summary-row">
+      <span class="label">มูลค่าอุปกรณ์คอมพิวเตอร์</span>
+      <span class="value" id="equipmentTotalDisplay">0</span>
+    </div>
+    <div class="summary-row" style="border-bottom:2px solid rgba(255,255,255,0.2);padding-bottom:12px;">
+      <span class="label" style="font-weight:600;">รวมมูลค่าดำเนินการ</span>
+      <span class="value" style="font-weight:700;" id="subtotalDisplay">0</span>
+    </div>
+
+    <div class="summary-row promo-row">
+      <span class="label">Promotion <span id="promoPercentDisplay">15</span>%</span>
+      <div class="promo-input-wrapper">
+        <span style="font-size:0.88rem;color:rgba(255,255,255,0.7);">%</span>
+        <input type="text" class="promo-input" id="promoInput" value="15" inputmode="decimal">
+        <span class="value" id="promoAmountDisplay" style="min-width:80px;">0</span>
+      </div>
+    </div>
+
+    <div class="summary-row vat-row">
+      <span class="label">ภาษีมูลค่าเพิ่ม VAT 7%</span>
+      <span class="value orange-text" id="vatDisplay">0</span>
+    </div>
+
+    <div class="summary-row grand-total-row">
+      <span class="label"><i class="fas fa-star"></i> มูลค่าโครงการ</span>
+      <span class="value" id="grandTotalDisplay">0</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============ DATA ============
+const PROMO_DEFAULT = 15;
+const VAT_RATE = 0.07;
+
+const activitiesData = [
+  { id: 'act1', name: 'จัดหาโฉนด ,ระวาง , เอกสารสิทธิ์อื่นๆ', price: 150, unit: '/ แปลง', defaultChecked: true },
+  { id: 'act2', name: 'ภาพถ่ายโดรน (รวม GCP แล้ว)', price: 15000, unit: '/ ตร.กม.', defaultChecked: false },
+  { id: 'act3', name: 'ภาพถ่ายดาวเทียม', price: 1000, unit: '/ ตร.กม.', defaultChecked: true },
+  { id: 'act4', name: 'จัดทำแผนที่แม่บท', price: 120, unit: '/ Block', defaultChecked: true },
+  { id: 'act5', name: 'สำรวจและนำเข้าข้อมูล', price: 110, unit: '/ รายการ', defaultChecked: true },
+  { id: 'act6', name: 'พิมพ์ แบบ ภดส. 1 - 4', price: 5, unit: '/ รายการ', defaultChecked: true }
+];
+
+let equipmentData = [
+  { id: 'eq1', name: 'เครื่องคอมพิวเตอร์แม่ข่าย แบบที่ 2', price: 620000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq2', name: 'เครื่องคอมพิวเตอร์ สำหรับงานประมวลผล แบบที่ 2', price: 36000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq3', name: 'เครื่องคอมพิวเตอร์ All In One สำหรับงานประมวลผล', price: 26000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq4', name: 'เครื่องคอมพิวเตอร์โน้ตบุ๊ก สำหรับงานประมวลผล', price: 25000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq5', name: 'เครื่องคอมพิวเตอร์โน้ตบุ๊ก สำหรับงานปัญญาประดิษฐ์', price: 35000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq6', name: 'อุปกรณ์ป้องกันเครือข่าย (Next Generation Firewall) แบบที่ 1', price: 220000, unit: '/ ชุด', defaultChecked: false },
+  { id: 'eq7', name: 'อุปกรณ์กระจายสัญญาณ (L2 Switch) ขนาด 24 ช่อง แบบที่ 2', price: 13000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq8', name: 'เครื่องพิมพ์เลเซอร์ หรือ LED ขาวดำ ชนิด Network แบบที่ 2', price: 16000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq9', name: 'เครื่องสำรองไฟฟ้า ขนาด 1.5 kVA', price: 6000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq10', name: 'เครื่องสำรองไฟฟ้า ขนาด 3 kVA', price: 29000, unit: '/ เครื่อง', defaultChecked: false },
+  { id: 'eq11', name: 'ค่าเช่าบริการระบบ Cloud Server แบบที่ 2', price: 13000, unit: '/ เดือน', defaultChecked: false },
+  { id: 'eq12', name: 'ชุดโปรแกรมระบบปฏิบัติการสำหรับเครื่องคอมพิวเตอร์ (OEM)', price: 5500, unit: '/ ชุด', defaultChecked: false },
+  { id: 'eq13', name: 'ชุดโปรแกรมระบบปฏิบัติการสำหรับเครื่องคอมพิวเตอร์แม่ข่าย (Server)', price: 45000, unit: '/ ชุด', defaultChecked: false },
+  { id: 'eq14', name: 'ชุดโปรแกรมจัดการสำนักงาน แบบที่ 1 ที่มีลิขสิทธิ์ถูกต้องตามกฎหมาย', price: 18500, unit: '/ ชุด', defaultChecked: false }
+];
+
+// ============ UTILITY ============
+function fmt(n) {
+  if (n === null || n === undefined || isNaN(n)) return '0';
+  return Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+
+function parseNum(v) {
+  if (typeof v === 'string') v = v.replace(/,/g, '').trim();
+  const n = parseFloat(v);
+  return isNaN(n) ? 0 : n;
+}
+
+function selectAllOnFocus(el) {
+  el.addEventListener('focus', function() {
+    this.setSelectionRange(0, this.value.length);
+  });
+}
+
+function formatOnBlur(el) {
+  el.addEventListener('blur', function() {
+    const raw = parseNum(this.value);
+    if (this.id === 'promoInput') {
+      this.value = raw;
+    } else {
+      this.value = fmt(raw);
+    }
+  });
+}
+
+function formatOnInit(el) {
+  const raw = parseNum(el.value);
+  el.value = fmt(raw);
+}
+
+// ============ RENDER LISTS ============
+function renderActivities() {
+  const container = document.getElementById('activitiesList');
+  container.innerHTML = '';
+  activitiesData.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'item-row' + (item.defaultChecked ? ' checked' : '');
+    row.dataset.idx = idx;
+    row.innerHTML = `
+      <input type="checkbox" class="item-checkbox" ${item.defaultChecked ? 'checked' : ''} onchange="onActivityCheck(${idx})">
+      <input type="text" class="item-name" value="${item.name}" onchange="onActivityName(${idx}, this.value)">
+      <input type="text" class="item-price" value="${fmt(item.price)}" inputmode="numeric" onfocus="this.select()" onchange="onActivityPrice(${idx}, this.value)">
+      <span class="item-total" id="actTotal_${idx}"><span class="total-num">0</span> <span class="item-unit">บาท</span></span>
+    `;
+    container.appendChild(row);
+    selectAllOnFocus(row.querySelector('.item-price'));
+  });
+}
+
+function renderEquipment() {
+  const container = document.getElementById('equipmentList');
+  container.innerHTML = '';
+  equipmentData.forEach((item, idx) => {
+    const row = document.createElement('div');
+    row.className = 'item-row equip' + (item.defaultChecked ? ' checked' : '');
+    row.dataset.idx = idx;
+    row.innerHTML = `
+      <input type="checkbox" class="item-checkbox" ${item.defaultChecked ? 'checked' : ''} onchange="onEquipCheck(${idx})">
+      <input type="text" class="item-name" value="${item.name}" onchange="onEquipName(${idx}, this.value)">
+      <input type="text" class="item-price" value="${fmt(item.price)}" inputmode="numeric" onfocus="this.select()" onchange="onEquipPrice(${idx}, this.value)">
+      <span class="item-total" id="eqTotal_${idx}"><span class="total-num">0</span> <span class="item-unit">บาท</span></span>
+    `;
+    container.appendChild(row);
+    selectAllOnFocus(row.querySelector('.item-price'));
+  });
+}
+
+// ============ EVENT HANDLERS ============
+function onActivityCheck(idx) {
+  const cb = document.querySelectorAll('#activitiesList .item-checkbox')[idx];
+  const row = cb.closest('.item-row');
+  row.classList.toggle('checked', cb.checked);
+  activitiesData[idx].defaultChecked = cb.checked;
+  calculateAll();
+}
+
+function onActivityName(idx, val) {
+  activitiesData[idx].name = val;
+}
+
+function onActivityPrice(idx, val) {
+  activitiesData[idx].price = parseNum(val);
+  const row = document.querySelectorAll('#activitiesList .item-row')[idx];
+  const priceInput = row.querySelector('.item-price');
+  priceInput.value = fmt(activitiesData[idx].price);
+  calculateAll();
+}
+
+function onEquipCheck(idx) {
+  const cb = document.querySelectorAll('#equipmentList .item-checkbox')[idx];
+  const row = cb.closest('.item-row');
+  row.classList.toggle('checked', cb.checked);
+  equipmentData[idx].defaultChecked = cb.checked;
+  calculateAll();
+}
+
+function onEquipName(idx, val) {
+  equipmentData[idx].name = val;
+}
+
+function onEquipPrice(idx, val) {
+  equipmentData[idx].price = parseNum(val);
+  const row = document.querySelectorAll('#equipmentList .item-row')[idx];
+  const priceInput = row.querySelector('.item-price');
+  priceInput.value = fmt(equipmentData[idx].price);
+  calculateAll();
+}
+
+// ============ CALCULATIONS ============
+function calculateAll() {
+  // Read basic inputs
+  const land = parseNum(document.getElementById('landInput').value);
+  const building = parseNum(document.getElementById('buildingInput').value);
+  const sign = parseNum(document.getElementById('signInput').value);
+  const area = parseNum(document.getElementById('areaInput').value);
+
+  // Read Zone & Block from inputs (may have been manually edited)
+  const zone = parseNum(document.getElementById('zoneInput').value);
+  const block = parseNum(document.getElementById('blockInput').value);
+
+  // Activities totals
+  let activitiesTotal = 0;
+  const actCheckboxes = document.querySelectorAll('#activitiesList .item-checkbox');
+  actCheckboxes.forEach((cb, i) => {
+    const totalNum = document.querySelector('#actTotal_' + i + ' .total-num');
+    if (cb.checked) {
+      const price = activitiesData[i].price;
+      let total = 0;
+      switch (i) {
+        case 0: total = price * land; break; // ที่ดิน
+        case 1: total = price * area; break; // โดรน × พื้นที่
+        case 2: total = price * area; break; // ดาวเทียม × พื้นที่
+        case 3: total = price * block; break; // แผนที่แม่บท × Block
+        case 4: total = price * (land + building + sign); break; // สำรวจ × ผลรวม
+        case 5: total = price * land * 4; break; // ภดส. × ที่ดิน × 4
+      }
+      totalNum.textContent = fmt(total);
+      activitiesTotal += total;
+    } else {
+      totalNum.textContent = '0';
+    }
+  });
+
+  // Equipment totals
+  let equipmentTotal = 0;
+  const eqCheckboxes = document.querySelectorAll('#equipmentList .item-checkbox');
+  eqCheckboxes.forEach((cb, i) => {
+    const totalNum = document.querySelector('#eqTotal_' + i + ' .total-num');
+    if (cb.checked) {
+      const total = equipmentData[i].price;
+      totalNum.textContent = fmt(total);
+      equipmentTotal += total;
+    } else {
+      totalNum.textContent = '0';
+    }
+  });
+
+  // Counts
+  const actCount = Array.from(actCheckboxes).filter(c => c.checked).length;
+  const eqCount = Array.from(eqCheckboxes).filter(c => c.checked).length;
+  document.getElementById('checkedActivitiesCount').textContent = actCount;
+  document.getElementById('checkedEquipmentCount').textContent = eqCount;
+
+  // Summary calculations
+  const subtotal = activitiesTotal + equipmentTotal; // ข้อ4
+
+  const promoPercent = parseNum(document.getElementById('promoInput').value);
+  document.getElementById('promoPercentDisplay').textContent = fmt(promoPercent);
+  const promoAmount = subtotal * promoPercent / 100; // ข้อ5
+
+  const vatAmount = (subtotal + promoAmount) * VAT_RATE; // ข้อ6
+
+  const grandTotal = subtotal + promoAmount + vatAmount; // ข้อ7
+
+  // Display
+  document.getElementById('activitiesTotalDisplay').textContent = fmt(activitiesTotal);
+  document.getElementById('equipmentTotalDisplay').textContent = fmt(equipmentTotal);
+  document.getElementById('subtotalDisplay').textContent = fmt(subtotal);
+  document.getElementById('promoAmountDisplay').textContent = fmt(promoAmount);
+  document.getElementById('vatDisplay').textContent = fmt(vatAmount);
+  document.getElementById('grandTotalDisplay').textContent = fmt(grandTotal);
+}
+
+// ============ ADD EQUIPMENT ITEM ============
+function addEquipmentItem() {
+  const idx = equipmentData.length;
+  equipmentData.push({
+    id: 'eq' + (idx + 1),
+    name: 'รายการใหม่',
+    price: 0,
+    unit: '/ เครื่อง',
+    defaultChecked: false
+  });
+  const container = document.getElementById('equipmentList');
+  const row = document.createElement('div');
+  row.className = 'item-row equip';
+  row.dataset.idx = idx;
+  row.innerHTML = `
+    <input type="checkbox" class="item-checkbox" onchange="onEquipCheck(${idx})">
+    <input type="text" class="item-name" value="รายการใหม่" onchange="onEquipName(${idx}, this.value)">
+    <input type="text" class="item-price" value="0" inputmode="numeric" onfocus="this.select()" onchange="onEquipPrice(${idx}, this.value)">
+    <span class="item-total" id="eqTotal_${idx}"><span class="total-num">0</span> <span class="item-unit">บาท</span></span>
+  `;
+  container.appendChild(row);
+  selectAllOnFocus(row.querySelector('.item-price'));
+  calculateAll();
+}
+
+// ============ TOGGLE SECTIONS ============
+function toggleSection(type) {
+  const content = document.getElementById(type + 'Content');
+  const btn = document.getElementById('toggle' + type.charAt(0).toUpperCase() + type.slice(1));
+  const isShow = content.classList.toggle('show');
+  const icon = btn.querySelector('i');
+  const label = type === 'activities' ? 'กิจกรรม' : 'อุปกรณ์';
+  if (isShow) {
+    btn.innerHTML = '<i class="fas fa-chevron-up"></i> ซ่อนรายละเอียด' + label;
+    btn.classList.add('active');
+  } else {
+    btn.innerHTML = '<i class="fas fa-chevron-down"></i> แสดงรายละเอียด' + label;
+    btn.classList.remove('active');
+  }
+}
+
+// ============ INPUT SETUP ============
+function setupInputs() {
+  const numberInputs = [
+    'landInput', 'buildingInput', 'signInput', 'areaInput'
+  ];
+  numberInputs.forEach(id => {
+    const el = document.getElementById(id);
+    formatOnInit(el);
+    selectAllOnFocus(el);
+    formatOnBlur(el);
+    el.addEventListener('input', function() {
+      // Don't format during input to allow typing
+    });
+    el.addEventListener('change', function() {
+      if (this.id === 'areaInput') {
+        const raw = parseNum(this.value);
+        const zone = Math.floor(raw / 2);
+        const block = zone * 15;
+        document.getElementById('zoneInput').value = fmt(zone);
+        document.getElementById('blockInput').value = fmt(block);
+      }
+      calculateAll();
+    });
+  });
+
+  // Zone & Block - editable, format on blur, select on focus
+  const zoneEl = document.getElementById('zoneInput');
+  const blockEl = document.getElementById('blockInput');
+  formatOnBlur(zoneEl);
+  formatOnBlur(blockEl);
+  selectAllOnFocus(zoneEl);
+  selectAllOnFocus(blockEl);
+  zoneEl.addEventListener('change', calculateAll);
+  blockEl.addEventListener('change', calculateAll);
+
+  // Promotion input
+  const promoEl = document.getElementById('promoInput');
+  selectAllOnFocus(promoEl);
+  promoEl.addEventListener('change', calculateAll);
+  promoEl.addEventListener('input', function() {
+    document.getElementById('promoPercentDisplay').textContent = parseNum(this.value) || '0';
+  });
+}
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', function() {
+  renderActivities();
+  renderEquipment();
+  setupInputs();
+
+  // Set initial Zone & Block from area
+  const area = parseNum(document.getElementById('areaInput').value);
+  const initZone = Math.floor(area / 2);
+  const initBlock = initZone * 15;
+  document.getElementById('zoneInput').value = fmt(initZone);
+  document.getElementById('blockInput').value = fmt(initBlock);
+
+  calculateAll();
+});
+</script>
+</body>
+</html>
